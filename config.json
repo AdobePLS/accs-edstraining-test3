@@ -1,7 +1,7 @@
 {
   "public": {
     "default": {
-      "commerce-endpoint": "https://na1-sandbox.api.commerce.adobe.com/LuBhB4Sv4qAZAc87AZhJB6/graphql",
+      "commerce-endpoint": "https://na1-sandbox.api.commerce.adobe.com/54QceLnAZ1rLMZRgVFG6pH/graphql",
       "headers": {
         "all": {
           "Store": "default"
@@ -19,7 +19,7 @@
       "analytics": {
         "base-currency-code": "USD",
         "environment": "Testing",
-        "environment-id": "LuBhB4Sv4qAZAc87AZhJB6",
+        "environment-id": "54QceLnAZ1rLMZRgVFG6pH",
         "store-code": "main_website_store",
         "store-id": "main_website_store",
         "store-name": "Default Store View",
