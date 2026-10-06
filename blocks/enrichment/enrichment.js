@@ -40,8 +40,25 @@ export default async function decorate(block) {
     const index = await fetchIndex('enrichment/enrichment');
     const matchingFragments = index.data
       .filter((fragment) => Object.keys(filters).every((filterKey) => {
-        const values = JSON.parse(fragment[filterKey]);
-        return values.includes(filters[filterKey]);
+        const rawValue = fragment[filterKey];
+
+        let values = [];
+        if (rawValue === undefined || rawValue === null || rawValue === '') {
+          values = [];
+        } else {
+          try {
+            const parsed = JSON.parse(rawValue);
+            values = Array.isArray(parsed) ? parsed : [parsed];
+          } catch {
+            values = String(rawValue)
+              .split(',')
+              .map((value) => value.trim())
+              .filter(Boolean);
+          }
+        }
+
+        const normalizedFilter = String(filters[filterKey]).trim();
+        return values.some((value) => String(value).trim() === normalizedFilter);
       }))
       .map((fragment) => fragment.path);
 
