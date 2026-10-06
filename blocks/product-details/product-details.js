@@ -71,6 +71,12 @@ function updateAddToCartButtonText(addToCartInstance, inCart, labels) {
   }
 }
 
+// Decorative icon rendered in the first column of each attribute spec row.
+const ATTRIBUTE_ICON_SVG = `
+  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+    <path fill="currentColor" d="M9 5h11v2H9zm0 6h11v2H9zm0 6h11v2H9zM4 4h3v3H4zm0 6h3v3H4zm0 6h3v3H4z"/>
+  </svg>`;
+
 /**
  * Formats numeric attribute values for display (e.g., "10.000000" → "10").
  * Non-numeric values are returned as-is.
@@ -144,6 +150,7 @@ export default async function decorate(block) {
   const $tagline = fragment.querySelector('.product-details__tagline');
   const $stock = fragment.querySelector('.product-details__stock');
   const $metaTitle = fragment.querySelector('.product-details__metaTitle');
+
 
   block.replaceChildren(fragment);
   events.on('pdp/data', (callbackProduct) => {
@@ -269,6 +276,42 @@ export default async function decorate(block) {
     // Attributes
     pdpRendered.render(ProductAttributes, {
       formatValue: formatNumericAttributeValue,
+      slots: {
+        Attributes: (ctx) => {
+          const attributes = (ctx.data?.attributes ?? []).filter(
+            (attr) => attr.value && !attr.id?.startsWith('ac_'),
+          );
+          if (!attributes.length) return;
+
+          const table = document.createElement('table');
+          table.className = 'product-details__attributes-table';
+
+          const tbody = document.createElement('tbody');
+          attributes.forEach((attr) => {
+            const row = document.createElement('tr');
+
+            const iconCell = document.createElement('td');
+            iconCell.className = 'product-details__attributes-icon';
+            iconCell.innerHTML = ATTRIBUTE_ICON_SVG;
+
+            const labelCell = document.createElement('th');
+            labelCell.scope = 'row';
+            labelCell.className = 'product-details__attributes-label';
+            labelCell.textContent = attr.label;
+
+            const valueCell = document.createElement('td');
+            valueCell.className = 'product-details__attributes-value';
+            // value may contain HTML (matches default dangerouslySetInnerHTML behavior)
+            valueCell.innerHTML = formatNumericAttributeValue(String(attr.value));
+
+            row.append(iconCell, labelCell, valueCell);
+            tbody.appendChild(row);
+          });
+          table.appendChild(tbody);
+
+          ctx.appendChild(table);
+        },
+      },
     })($attributes),
 
     // Wishlist button - WishlistToggle Container
